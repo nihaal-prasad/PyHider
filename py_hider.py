@@ -1,16 +1,32 @@
-# Embed string: python stegotool.py <image file> "<message in quotes>"
-# Decode string: python stegotool.py <image file>
+"""
+PyHider Steganography Tool
 
-# TODO: Make this work with other image formats as well
-# TODO: Add an option to use this with huffman encoding
-# TODO: Check to make sure that the message does not go over the image's space limit
-# TODO: Add an option to change the exported file's name
+This module is used to implement steganography tools into python. It requires the Pillow library (Python Imaging Library) in order to work on images.
+
+Methods
+-------
+_strToBits(string: str)
+    Converts a string into a list of ascii 1's and 0's.
+_bitsToStr(bits: list)
+    Converts a list of ascii 1's and 0's into a string.
+encodePNG(encode: str, imgFile: str)
+    Encodes a given message into the given PNG file using steganography. Returns a new PIL Image file with the message encoded into it.
+decodePNG(imgFile: str)
+    Decodes a message from a given PNG image using steganography. Takes an image file as an input.
+"""
+
 
 import sys
 from PIL import Image
 
-# Converts the string into bits
-def strToBits(string):
+def _strToBits(string: str) -> list:
+     """Converts a string into a list of ascii 1's and 0's.
+     
+     Parameters
+     ----------
+     string: The input string that will be converted to a list of bits.
+     """
+
      result = [] # The output
      for byte in bytearray(string, 'ascii'): # Loop through each byte in the string
          # Check if the length of the byte is six, and add a zero at the beginning to make the length 7
@@ -22,7 +38,14 @@ def strToBits(string):
              result.append(bit) # Append to the result
      return result # Return the result        
 
-def bitsToStr(bits):
+def _bitsToStr(bits: list) -> str:
+    """Converts a list of ascii 1's and 0's into a string.
+    
+    Parameters
+    ----------
+    bits: The list of bits that will be converted into a string.
+    """
+
     result = "" # The string result that will be returned
     for byteStart in range(0, len(bits), 7): # Loop through each byte (with a step of 7 because ascii value has 7 bits)
         value = "" # This will be 7 bits in string representation (required to be a string in order to convert to ascii)
@@ -31,17 +54,22 @@ def bitsToStr(bits):
         result += chr(int(value, 2)) # Add to the result
     return result # Return the result
 
-# Encode the string into the image
-def encode():
-    print('Encoding message...')
+def encodePNG(encode: str, imgFile: str) -> Image:
+    """Encodes a given message into the given PNG file using steganography. Returns a new PIL Image file with the message encoded into it.
+    
+    Parameters
+    ----------
+    encode: The input string that will be encoded into the image
+    imgFile: A string representing the location of a PNG file that will be used to encode the message
+    """
 
     # Open the image
-    img = Image.open(sys.argv[1]).convert('RGB')
+    img = Image.open(imgFile).convert('RGB')
 
-    # Get the message
-    message = strToBits(sys.argv[2])
+    # Convert the message into bits
+    message = _strToBits(encode)
 
-    # Get the width and height in pixels
+    # Get the width and height of the image in pixels
     width, height = img.size
 
     # Counter for the message
@@ -92,20 +120,23 @@ def encode():
             # Write down the RGB values in the new image
             new_img_data.append((r, g, b))
 
-    # Save the new image
-    print('Saving new image as steg.png')
+    # Return the new image
     new_img = Image.new(img.mode, img.size)
     new_img.putdata(new_img_data)
-    new_img.save('steg.png')
+    return new_img
 
-# Decode the string from the image
-def decode():
+def decodePNG(imgFile: str) -> str:
+    """Decodes a message from a given PNG image using steganography. Takes an image file as an input.
+    
+    Parameters
+    ----------
+    imgFile: A string representing the location of a PNG file that contains an encoded message
+    """
+
     # Open the image
-    img = Image.open(sys.argv[1]).convert('RGB')
+    img = Image.open(imgFile).convert('RGB')
 
-    # This counter is used to figure out if the string has ended or not
-    # Every time a 1 appears, the counter will be incremented (7 consecutive ones means an end of string has occurred)
-    # Every time a 0 appears, the counter will be reset
+    # This counter is used to identify a NULL character (seven 0's), which will be used to represent the end of the string
     counter = 0
 
     # These are the bits that make up the message
@@ -143,11 +174,10 @@ def decode():
         if(counter >= 7): break
 
     # Print out the message in ascii format
-    print('Decoded message:')
-    print(bitsToStr(bits))
+    return _bitsToStr(bits)
 
-# Check how many arguments there are
-if(len(sys.argv) == 3): # If there are three arguments, we are encoding a string
-    encode()
-elif(len(sys.argv) == 2): # If there are two arguments, we are decoding a string
-    decode()
+# TODO: Make this work with other image formats as well
+# TODO: Add an option to use this with huffman encoding
+# TODO: Add an option to use this with unicode
+# TODO: Check to make sure that the message does not go over the image's space limit
+# TODO: Add the option of using passwords
