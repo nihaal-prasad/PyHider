@@ -173,11 +173,13 @@ def decodePNG(imgFile: str) -> str:
         # Check if seven zeros have been found (our terminating value) and break if it has
         if(counter >= 7): break
 
-    # Print out the message in ascii format
-    return _bitsToStr(bits)
+    # Convert the message to ascii format and return it
+    output = _bitsToStr(bits)
+    return output[:len(output)-1] # The last value is sliced because the last value is \x00 (string terminator)
 
-# TODO: Make this work with other image formats as well
+# TODO: Make this work with GIF and JPEG as well
+# TODO: Make this work with MP3 and MP4 files as well
 # TODO: Add an option to use this with huffman encoding
 # TODO: Add an option to use this with unicode
 # TODO: Check to make sure that the message does not go over the image's space limit
-# TODO: Add the option of using passwords
+# TODO: Add the option of using encryption

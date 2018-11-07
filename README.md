@@ -15,7 +15,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> encoded_img = py_hider.encodePNG('This will be encoded.', 'lol.png') # To encode something in PNG file
 >>> encoded_img.save('encoded.png') # Save the file with the encoded message
 >>> py_hider.decodePNG('encoded.png') # Decode a PNG file with a message embedded into it
-'This will be encoded.\x00'
+'This will be encoded.'
 ```
 
 ### Functions
