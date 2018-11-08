@@ -1,73 +1,37 @@
 """
 PyHider Steganography Tool
 
-This module is used to implement steganography tools into python. It requires the Pillow library (Python Imaging Library) in order to work on images.
+This module is used to implement steganography tools into python. It requires the Pillow library (Python Imaging Library) in order to work on images and the bitarray library to work with bits.
 
 Methods
 -------
-_strToBits(string: str)
-    Converts a string into a list of ascii 1's and 0's.
-_bitsToStr(bits: list)
-    Converts a list of ascii 1's and 0's into a string.
-encodePNG(encode: str, imgFile: str)
+encodePNG(plaintext, imgFile, encoding='ascii'):
     Encodes a given message into the given PNG file using steganography. Returns a new PIL Image file with the message encoded into it.
-decodePNG(imgFile: str)
-    Decodes a message from a given PNG image using steganography. Takes an image file as an input.
+decodePNG(imgFile):
+    Decodes a message from a given PNG image using steganography. Takes an image file as an input. Returns the decoded string.
 """
 
 
 import sys
+import bitarray
 from PIL import Image
 
-def _strToBits(string: str) -> list:
-     """Converts a string into a list of ascii 1's and 0's.
-     
-     Parameters
-     ----------
-     string: The input string that will be converted to a list of bits.
-     """
-
-     result = [] # The output
-     for byte in bytearray(string, 'ascii'): # Loop through each byte in the string
-         # Check if the length of the byte is six, and add a zero at the beginning to make the length 7
-         # This is done so that we can have every single byte have a length of 7 (important for the bitsToStr method)
-         if(len(list(bin(byte)[2:])) == 6): result.append('0')
-
-         # Loop through each bit in the byte
-         for bit in list(bin(byte)[2:]):
-             result.append(bit) # Append to the result
-     return result # Return the result        
-
-def _bitsToStr(bits: list) -> str:
-    """Converts a list of ascii 1's and 0's into a string.
-    
-    Parameters
-    ----------
-    bits: The list of bits that will be converted into a string.
-    """
-
-    result = "" # The string result that will be returned
-    for byteStart in range(0, len(bits), 7): # Loop through each byte (with a step of 7 because ascii value has 7 bits)
-        value = "" # This will be 7 bits in string representation (required to be a string in order to convert to ascii)
-        for x in bits[byteStart:byteStart+7]: # Loop through each bit in the byte
-            value+=x # Add to the value
-        result += chr(int(value, 2)) # Add to the result
-    return result # Return the result
-
-def encodePNG(encode: str, imgFile: str) -> Image:
+def encodePNG(plaintext: str, imgFile: str, encoding='utf-8') -> Image:
     """Encodes a given message into the given PNG file using steganography. Returns a new PIL Image file with the message encoded into it.
     
     Parameters
     ----------
-    encode: The input string that will be encoded into the image
+    plaintext: The input string that will be encoded into the image
     imgFile: A string representing the location of a PNG file that will be used to encode the message
+    encoding: How the characters will be encoded in binary (default is 'utf-8', but 'ascii' or another common character encoding may also be used)
     """
 
     # Open the image
     img = Image.open(imgFile).convert('RGB')
 
-    # Convert the message into bits
-    message = _strToBits(encode)
+    # Convert the plaintext into a bitarray
+    message = bitarray.bitarray()
+    message.frombytes(plaintext.encode(encoding))
 
     # Get the width and height of the image in pixels
     width, height = img.size
@@ -86,9 +50,9 @@ def encodePNG(encode: str, imgFile: str) -> Image:
 
             # Continue writing our message in the red value if we have not yet finished
             if(counter < len(message)):
-                if(message[counter] == '0'):
+                if(not message[counter]):
                     if(r % 2 != 0): r = r + 1
-                elif(message[counter] == '1'):
+                elif(message[counter]):
                     if(r % 2 != 1): r = r + 1
                 counter = counter + 1
             elif(counter >= len(message)): # If we have finished our message, put down zeros to indicate the end of message
@@ -97,9 +61,9 @@ def encodePNG(encode: str, imgFile: str) -> Image:
 
             # Continue writing our message in the green value if we have not yet finished
             if(counter < len(message)):
-                if(message[counter] == '0'):
+                if(not message[counter]):
                     if(g % 2 != 0): g = g + 1
-                elif(message[counter] == '1'):
+                elif(message[counter]):
                     if(g % 2 != 1): g = g + 1
                 counter = counter + 1
             elif(counter >= len(message)): # If we have finished our message, put down zeros to indicate the end of message
@@ -108,9 +72,9 @@ def encodePNG(encode: str, imgFile: str) -> Image:
 
             # Continue writing our message in the blue value if we have not yet finished
             if(counter < len(message)):
-                if(message[counter] == '0'):
+                if(not message[counter]):
                     if(b % 2 != 0): b = b + 1
-                elif(message[counter] == '1'):
+                elif(message[counter]):
                     if(b % 2 != 1): b = b + 1
                 counter = counter + 1
             elif(counter >= len(message)): # If we have finished our message, put down zeros to indicate the end of message
@@ -152,9 +116,9 @@ def decodePNG(imgFile: str) -> str:
             r, g, b = img.getpixel((x, y))
 
             # Add r to the bits list
-            bits.append(str(r % 2))
-            bits.append(str(g % 2))
-            bits.append(str(b % 2))
+            bits.append(r % 2)
+            bits.append(g % 2)
+            bits.append(b % 2) 
 
             # Change the counter for the r value
             if(r % 2 == 0): counter = counter + 1
@@ -168,18 +132,19 @@ def decodePNG(imgFile: str) -> str:
             if(b % 2 == 0): counter = counter + 1
             else: counter = 0
 
-            # Check if seven zeros have been found (our terminating value) and break if it has
+            # Check if seven zeros have been found (our terminating value) and break the inner loop if it has
             if(counter >= 7): break
-        # Check if seven zeros have been found (our terminating value) and break if it has
+        # Check if seven zeros have been found (our terminating value) and break the outer loop if it has
         if(counter >= 7): break
 
-    # Convert the message to ascii format and return it
-    output = _bitsToStr(bits)
-    return output[:len(output)-1] # The last value is sliced because the last value is \x00 (string terminator)
+    # Convert the message to string format and return it
+    output = bitarray.bitarray(bits).tostring()
+    return output[:len(output) - 1] # Slices the last character because the last character is always a null character (\x00)
 
 # TODO: Make this work with GIF and JPEG as well
+# TODO: Encode images inside other images
 # TODO: Make this work with MP3 and MP4 files as well
 # TODO: Add an option to use this with huffman encoding
-# TODO: Add an option to use this with unicode
+# TODO: Add an option to use this with run length encoding
 # TODO: Check to make sure that the message does not go over the image's space limit
 # TODO: Add the option of using encryption

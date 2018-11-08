@@ -2,7 +2,7 @@
 PyHider is a steganography tool that I am currently building in Python. This tool is currently a work in progress that allows you to write hidden messages in files without anyone knowing that there is a hidden message in that file.
 
 ### Dependencies
-PyHider requires that you have [Pillow](https://python-pillow.org/) installed on your machine. The easiest way to install Pillow is to type in "pip install pillow" in terminal. The Pillow library is required in order to read and manipulate image files.
+PyHider requires that you have [Pillow](https://python-pillow.org/) and [Bitarray](https://pypi.org/project/bitarray/) installed on your machine. The Pillow library is required in order to read and manipulate image files, and the bitarray library is required in order to read and manipulate bits of data. The easiest way to install these libraries is to type in "pip install [library]" in terminal.
 
 ### Usage
 It is fairly easy to use this program in any Python project. Simply import the py_hider module into your project, and call whichever function you need to use.
@@ -28,10 +28,11 @@ Unfortunately, since this project is still a work in progress, I only have two u
         ----------
         imgFile: A string representing the location of a PNG file that contains an encoded message
     
-    encodePNG(encode:str, imgFile:str) -> <module 'PIL.Image' from '/usr/lib/python3/dist-packages/PIL/Image.py'>
+    encodePNG(plaintext:str, imgFile:str, encoding='utf-8') -> <module 'PIL.Image' from '/usr/lib/python3/dist-packages/PIL/Image.py'>
         Encodes a given message into the given PNG file using steganography. Returns a new PIL Image file with the message encoded into it.
         
         Parameters
         ----------
-        encode: The input string that will be encoded into the image
+        plaintext: The input string that will be encoded into the image
         imgFile: A string representing the location of a PNG file that will be used to encode the message
+        encoding: How the characters will be encoded in binary (default is 'utf-8', but 'ascii' or another common character encoding may also be used)
