@@ -20,23 +20,19 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 ### Functions
 Unfortunately, since this project is still a work in progress, I only have two usable functions. However, more will be added in the near future.
-
-    decodePNG(imgFile:str) -> str
-        Decodes a message from a given PNG image using steganography. Takes an image file as an input.
-        
-        Parameters
-        ----------
-        imgFile: A string representing the location of a PNG file that contains an encoded message
+```
+decodePNG(imgFile:str) -> str
+    - Usage: Decodes a message from a given PNG image using steganography.
+    - imgFile: A string representing the location of an PNG file that contains a hidden message.
+    - Output: A string representing the hidden message
     
-    encodePNG(plaintext:str, imgFile:str, encoding='utf-8') -> <module 'PIL.Image' from '/usr/lib/python3/dist-packages/PIL/Image.py'>
-        Encodes a given message into the given PNG file using steganography. Returns a new PIL Image file with the message encoded into it.
-        
-        Parameters
-        ----------
-        plaintext: The input string that will be encoded into the image
-        imgFile: A string representing the location of a PNG file that will be used to encode the message
-        encoding: How the characters will be encoded in binary (default is 'utf-8', but 'ascii' or another common character encoding may also be used)
-
+encodePNG(plaintext:str, imgFile:str, encoding='utf-8') -> <module 'PIL.Image' from '/usr/lib/python3/dist-packages/PIL/Image.py'>
+    - Usage: Encodes a given message into the given PNG file using steganography.
+    - plaintext: The input string that will be encoded into the image.
+    - imgFile: A string representing the location of an PNG file that will serve as the base image for steganography.
+    - encoding: How the characters will be encoded in binary (default is 'utf-8', but 'ascii' or another common character encoding may also be used).
+    - Output: A new Pillow Image file with the message encoded into it.
+```
 ### How PNG Image Steganography Works
 This image steganography algorithm uses LSB image steganography, which exploits the fact that humans cannot see the difference if you change the RGB values of a pixel by a 1 (ex. if you change a pixel RGB values from [123, 11, 57] to [124, 12, 58], humans will not notice a difference). Using this technique, a programmer can therefore state that an even number in an RGB value could represent a 0 and an odd number in an RGB could represent a 1. By changing the RGB values accordingly (usually by adding one) so that their divisibility by two correspond to ones and zeros, someone could implement an ascii or utf-8 message into an image without anybody else realizing that there is a message encoded into the image. For a more in depth definition, please [click here](https://en.wikipedia.org/wiki/Bit_numbering#Least_significant_bit_in_digital_steganography).
 
