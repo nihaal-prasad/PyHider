@@ -35,12 +35,3 @@ encodePNG(plaintext:str, imgFile:str, encoding='utf-8') -> <module 'PIL.Image' f
 ```
 ### How PNG Image Steganography Works
 This image steganography algorithm uses LSB image steganography, which exploits the fact that humans cannot see the difference if you change the RGB values of a pixel by a 1 (ex. if you change a pixel RGB values from [123, 11, 57] to [124, 12, 58], humans will not notice a difference). Using this technique, a programmer can therefore state that an even number in an RGB value could represent a 0 and an odd number in an RGB could represent a 1. By changing the RGB values accordingly (usually by adding one) so that their divisibility by two correspond to ones and zeros, someone could implement an ascii or utf-8 message into an image without anybody else realizing that there is a message encoded into the image. For a more in depth definition, please [click here](https://en.wikipedia.org/wiki/Bit_numbering#Least_significant_bit_in_digital_steganography).
-
-### TODO List:
-- Make this work with GIF and JPEG as well
-- Encode images inside other images
-- Make this work with MP3 and MP4 files as well
-- Add an option to use this with huffman encoding
-- Add an option to use this with run length encoding
-- Check to make sure that the message does not go over the image's space limit
-- Add the option of using encryption
