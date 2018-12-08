@@ -140,11 +140,3 @@ def decodePNG(imgFile: str) -> str:
     # Convert the message to string format and return it
     output = bitarray.bitarray(bits).tostring()
     return output[:len(output) - 1] # Slices the last character because the last character is always a null character (\x00)
-
-# TODO: Make this work with GIF and JPEG as well
-# TODO: Encode images inside other images
-# TODO: Make this work with MP3 and MP4 files as well
-# TODO: Add an option to use this with huffman encoding
-# TODO: Add an option to use this with run length encoding
-# TODO: Check to make sure that the message does not go over the image's space limit
-# TODO: Add the option of using encryption
