@@ -117,7 +117,7 @@ def decodePNG(imgFile: str) -> str:
     # Open the image
     img = Image.open(imgFile).convert('RGB')
 
-    # This counter is used to identify a NULL character (seven 0's), which will be used to represent the end of the string
+    # This counter is used to identify a NULL character (eight 0's), which will be used to represent the end of the string
     counter = 0
 
     # These are the bits that make up the message
@@ -130,7 +130,7 @@ def decodePNG(imgFile: str) -> str:
     # 1.) We obtain the first pixel in the image
     # 2.) Then we unpack the RGB values and loop through each value
     # 3.) Then we check whether the value is even or odd. If it is even, append zero to the bits list. If it is odd, append one to the bits list
-    # 4.) Break out of the loops if we find seven zeros in a row because seven zeros in a row is our terminating value
+    # 4.) Break out of the loops if we find eight zeros in a row because eight zeros in a row is our terminating value
     # 5.) Afterwards, convert the bits list into a string, and return that string
 
     # Read each pixel
@@ -152,12 +152,12 @@ def decodePNG(imgFile: str) -> str:
                 if(binary == 0): counter = counter + 1
                 else: counter = 0
 
-                # Check if seven zeros have been found (our terminating value) and break the inner loop if there are seven zeros
-                if(counter >= 7): break
-            # Check if seven zeros have been found (our terminating value) and break the middle loop if there are seven zeros
-            if(counter >= 7): break
-        # Check if seven zeros have been found (our terminating value) and break the outer loop if there are seven zeros
-        if(counter >= 7): break
+                # Check if eight zeros have been found (our terminating value) and break the inner loop if there are seven zeros
+                if(counter >= 8): break
+            # Check if eight zeros have been found (our terminating value) and break the middle loop if there are seven zeros
+            if(counter >= 8): break
+        # Check if eight zeros have been found (our terminating value) and break the outer loop if there are seven zeros
+        if(counter >= 8): break
 
     # Convert the message to string format and return it
     output = bitarray.bitarray(bits).tostring()
